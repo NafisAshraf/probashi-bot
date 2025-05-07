@@ -5,10 +5,10 @@ export default function Home() {
     <div>
       <h1>Landing Page</h1>
       <Button variant="outline" asChild>
-        <Link href="/auth/login">Login</Link>
+        <Link href="/login">Login</Link>
       </Button>
       <Button variant="outline" asChild>
-        <Link href="/auth/signup">Sign Up</Link>
+        <Link href="/sign-up">Sign Up</Link>
       </Button>
     </div>
   );

@@ -22,17 +22,18 @@ export async function POST(req: Request) {
     // Create a new ReadableStream
     const stream = new ReadableStream({
       async start(controller) {
-        let fullResponse = "";
-
-        for await (const chunk of completion) {
-          const content = chunk.choices[0]?.delta?.content || "";
-          fullResponse += content;
-
-          // Send the chunk to the client
-          controller.enqueue(new TextEncoder().encode(content));
+        try {
+          for await (const chunk of completion) {
+            const content = chunk.choices[0]?.delta?.content || "";
+            if (content) {
+              controller.enqueue(new TextEncoder().encode(content));
+            }
+          }
+          controller.close();
+        } catch (error) {
+          console.error("Error in stream:", error);
+          controller.error(error);
         }
-
-        controller.close();
       },
     });
 
