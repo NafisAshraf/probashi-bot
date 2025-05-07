@@ -19,11 +19,11 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { LogoutButton } from "@/components/logout-button";
 import ProfileDropdown from "@/components/profile-dropdown";
 
-interface Conversation {
+type Conversation = {
   id: string;
   title: string;
   created_at: string;
-}
+};
 
 function ChatLayoutContent({ children }: { children: React.ReactNode }) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
