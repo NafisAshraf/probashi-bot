@@ -17,39 +17,72 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [conversationTitle, setConversationTitle] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [userCountry, setUserCountry] = useState<string | null>(null);
   const supabase = createClient();
 
   // Fetch messages from DB
   const fetchMessages = async () => {
     try {
-      const { data: messages, error: messagesError } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("conversation_id", id)
-        .order("created_at", { ascending: true });
-      if (messagesError) throw messagesError;
-      const formattedMessages = messages.map((msg) => ({
-        role: msg.role as "user" | "assistant",
-        content: msg.content,
-      }));
-      setMessages(formattedMessages);
-      // Fetch conversation title
+      // First check if conversation exists
       const { data: conversation, error: conversationError } = await supabase
         .from("conversations")
         .select("title")
         .eq("id", id)
         .single();
-      if (conversationError) throw conversationError;
-      setConversationTitle(conversation?.title || "New Chat");
+
+      if (conversationError || !conversation) {
+        // If conversation doesn't exist, redirect to /chat
+        router.push("/chat");
+        return;
+      }
+
+      const { data: messages, error: messagesError } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", id)
+        .order("created_at", { ascending: true });
+
+      if (messagesError) throw messagesError;
+
+      const formattedMessages = messages.map((msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+      }));
+      setMessages(formattedMessages);
+      setConversationTitle(conversation.title || "New Chat");
     } catch (error) {
       console.error("Error fetching messages:", error);
+      // If there's an error, redirect to /chat
+      router.push("/chat");
     }
   };
 
   const handleSendMessage = async (message: string) => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const userMetadata = user?.user_metadata;
+    console.log(userMetadata);
+
     if (!message.trim()) return;
     setIsLoading(true);
     try {
+      // Get user country if not already set
+      let country = userCountry;
+      if (!userCountry) {
+        try {
+          const res = await fetch("https://get.geojs.io/v1/ip/geo.json");
+          const data = await res.json();
+          country = data.country || "Bangladesh";
+          setUserCountry(country);
+        } catch (err) {
+          console.error("Error fetching country:", err);
+          country = "Bangladesh";
+          setUserCountry(country);
+        }
+      }
+
       // Add user message to the chat
       setMessages((prev) => [...prev, { role: "user", content: message }]);
 
@@ -69,6 +102,9 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           messages: [...messages, { role: "user", content: message }],
+          country,
+          country_choice: userMetadata?.country_choice,
+          job_choice: userMetadata?.job_choice,
         }),
       });
 

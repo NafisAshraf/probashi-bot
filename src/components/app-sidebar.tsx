@@ -1,12 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { MessageSquare, Plus, MoreVertical, Eye, Trash2 } from "lucide-react";
+import {
+  MessagesSquare,
+  Plus,
+  MoreVertical,
+  Eye,
+  Trash2,
+  MessageSquare,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -23,6 +31,7 @@ import {
 import Link from "next/link";
 import { useConversation } from "@/lib/contexts/conversation-context";
 import { Button } from "./ui/button";
+import { useTranslations } from "next-intl";
 
 interface Conversation {
   id: string;
@@ -38,7 +47,6 @@ interface Conversation {
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   conversations: Conversation[];
 }
-
 export function AppSidebar({ conversations, ...props }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -54,6 +62,11 @@ export function AppSidebar({ conversations, ...props }: AppSidebarProps) {
         throw new Error("Failed to delete conversation");
       }
 
+      // If current route matches deleted conversation, redirect to /chat
+      if (pathname === `/chat/${id}`) {
+        router.push("/chat");
+      }
+
       // Trigger sidebar refresh to update the list
       triggerRefresh();
     } catch (error) {
@@ -61,6 +74,7 @@ export function AppSidebar({ conversations, ...props }: AppSidebarProps) {
     }
   };
 
+  const t = useTranslations();
   return (
     <Sidebar {...props}>
       <SidebarHeader className="border-b">
@@ -71,7 +85,7 @@ export function AppSidebar({ conversations, ...props }: AppSidebarProps) {
                 <div className="bg-sidebar-primary dark:bg-emerald-700 text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <MessageSquare className="size-4" />
                 </div>
-                <div className="text-2xl font-bold ">Probashi Bot</div>
+                <div className="text-2xl font-bold ">{t("logo")}</div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -167,6 +181,14 @@ export function AppSidebar({ conversations, ...props }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
+      <SidebarFooter>
+        <Link href="/forum">
+          <Button variant="ghost" className="w-full border-t rounded-none">
+            <MessagesSquare className="size-4 " />
+            <p>Visit Forum</p>
+          </Button>
+        </Link>
+      </SidebarFooter>
     </Sidebar>
   );
 }

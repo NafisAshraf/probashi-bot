@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,23 +21,24 @@ export const metadata: Metadata = {
   description: "Chatbot for Migrant Workers",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const locale = await getLocale();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
           <Toaster richColors closeButton />
         </ThemeProvider>
       </body>

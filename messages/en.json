@@ -1,0 +1,21 @@
+{
+  "language": "English",
+  "logo": "Probashi Bot",
+  "welcome": "Welcome to Probashi Bot",
+  "subtitle": "Your personal assistant for information about working and living abroad",
+  "askPlaceholder": "Ask anything",
+  "cards": {
+    "visa": {
+      "title": "Visa & Legal",
+      "description": "Information on visa processes, legal rights, and documentation"
+    },
+    "jobs": {
+      "title": "Jobs & Skills",
+      "description": "Job opportunities, skill training, and professional development"
+    },
+    "finance": {
+      "title": "Finance",
+      "description": "Remittance options, banking solutions, and financial tips"
+    }
+  }
+}

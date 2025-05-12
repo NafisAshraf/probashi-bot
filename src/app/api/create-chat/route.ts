@@ -34,7 +34,7 @@ export async function POST(req: Request) {
           {
             role: "system",
             content:
-              "You are a helpful assistant that creates titles for conversations. You will be given a user's message and you will need to create a title for the conversation. Create a very short title (maximum 3-4 words) that captures the essence of the user's message. Be extremely concise while remaining descriptive.",
+              "You are a helpful assistant that creates Bangla titles for conversations. You will be given a user's message and you will need to create a Bangla title for the conversation. Create a very short title in Bangla (maximum 3-4 words) that captures the essence of the user's message. Be extremely concise while remaining descriptive.",
           },
           {
             role: "user",

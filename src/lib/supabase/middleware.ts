@@ -47,9 +47,9 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/error") &&
     !request.nextUrl.pathname.startsWith("/update-password") &&
     !request.nextUrl.pathname.startsWith("/forgot-password") &&
-    !request.nextUrl.pathname.startsWith("/confirm") &&
-    request.nextUrl.pathname !== "/"
+    !request.nextUrl.pathname.startsWith("/confirm")
   ) {
+    // && request.nextUrl.pathname !== "/"
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/login";

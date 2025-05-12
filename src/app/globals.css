@@ -126,7 +126,7 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.185 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -143,4 +143,71 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.markdown-content {
+  @apply leading-relaxed text-sm;
+}
+/* .markdown-content strong {
+  @apply text-lg;
+} */
+
+.markdown-content ul li p:has(strong) {
+  @apply my-4;
+}
+
+.markdown-content p {
+  @apply my-2;
+}
+
+.markdown-content p:has(strong) {
+  @apply mt-7;
+}
+
+.markdown-content ul {
+  @apply list-disc pl-10;
+}
+
+.markdown-content ol {
+  @apply my-2 list-decimal pl-10;
+}
+
+.markdown-content li {
+  @apply my-2;
+}
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  @apply font-bold py-3;
+}
+
+.markdown-content h1 {
+  @apply text-2xl;
+}
+
+.markdown-content h2 {
+  @apply text-xl;
+}
+
+.markdown-content h3 {
+  @apply text-lg;
+}
+
+.markdown-content code {
+  @apply bg-neutral-100 dark:bg-neutral-800 px-1 py-0.5 rounded;
+}
+
+.markdown-content pre {
+  @apply bg-neutral-100 dark:bg-neutral-800 p-2 rounded my-2 overflow-x-auto;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-neutral-300 dark:border-neutral-700 pl-4 my-2 italic;
+}
+
+.markdown-content a {
+  @apply text-emerald-700 dark:text-emerald-500 hover:underline;
 }

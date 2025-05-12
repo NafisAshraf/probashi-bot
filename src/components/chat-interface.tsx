@@ -50,15 +50,17 @@ export function ChatInterface({
             }`}
           >
             <div
-              className={`max-w-[80%] rounded-xl px-3 py-2 ${
+              className={`max-w-[80%] rounded-xl px-3  ${
                 message.role === "user"
                   ? "bg-emerald-700 dark:bg-emerald-800 text-white"
-                  : "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200"
+                  : "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 py-5 px-7"
               }`}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {message.content}
-              </ReactMarkdown>
+              <div className="markdown-content">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {message.content.split("\n").join("\n\n")}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         ))}
