@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="flex flex-col h-full items-center justify-center">
+    <div className="flex flex-col h-full items-center justify-center max-w-full mx-auto w-full md:max-w-3xl xl:max-w-4xl space-y-5 px-6 py-5 xl:py-0">
       <div className="flex-1 p-4 space-y-4">
         {/* Assistant Message */}
         <div className="flex items-start gap-4">
