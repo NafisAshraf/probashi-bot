@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ChatInterface } from "@/components/chat-interface";
@@ -18,6 +18,12 @@ export default function ChatPage() {
   const [conversationTitle, setConversationTitle] = useState("");
   const [hasInitialized, setHasInitialized] = useState(false);
   const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcribedText, setTranscribedText] = useState<string>("");
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
   const supabase = createClient();
 
   // Fetch messages from DB
@@ -54,6 +60,93 @@ export default function ChatPage() {
       console.error("Error fetching messages:", error);
       // If there's an error, redirect to /chat
       router.push("/chat");
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+      streamRef.current = stream;
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm;codecs=opus",
+        audioBitsPerSecond: 128000,
+      });
+
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        setIsTranscribing(true);
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm;codecs=opus",
+        });
+        const formData = new FormData();
+        formData.append("audio", audioBlob);
+
+        try {
+          const response = await fetch("/api/speech-to-text", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to convert speech to text");
+          }
+
+          const data = await response.json();
+          if (data.text) {
+            // Instead of setting input directly, we'll call handleSendMessage
+            // or update a shared input state if ChatInterface handles it.
+            // For now, let's assume ChatInterface will have an input field
+            // and a way to update it.
+            // This part will need adjustment based on ChatInterface's props.
+            setTranscribedText(data.text);
+            // We need a way to get this text into the ChatInterface input
+            // This might involve lifting state up or passing a setter down.
+            // For now, I'll pass it to handleSendMessage.
+            // Or, if ChatInterface has its own input, we'd call a prop to set its value.
+            // Let's assume for now we want to send it as a message:
+            // await handleSendMessage(data.text); // Or update an input field.
+          }
+        } catch (error) {
+          console.error("Error converting speech to text:", error);
+        } finally {
+          setIsTranscribing(false);
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop());
+            streamRef.current = null;
+          }
+        }
+      };
+
+      setTimeout(() => {
+        mediaRecorder.start(100);
+        setIsRecording(true);
+      }, 100);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      setTimeout(() => {
+        mediaRecorderRef.current?.stop();
+        setIsRecording(false);
+      }, 500);
     }
   };
 
@@ -188,6 +281,12 @@ export default function ChatPage() {
           messages={messages}
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
+          isRecording={isRecording}
+          isTranscribing={isTranscribing}
+          startRecording={startRecording}
+          stopRecording={stopRecording}
+          transcribedText={transcribedText}
+          clearTranscribedText={() => setTranscribedText("")}
         />
       </div>
     </div>
