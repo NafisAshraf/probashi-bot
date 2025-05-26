@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: `You are a helpful assistant for migrant workers from Bangladesh. You MUST answer in Bangla, even if user asks in English. For context, user is currently in ${country}, and wants to go to ${country_choice} and work in ${job_choice}.`,
+          content: `You are a helpful assistant for migrant workers from Bangladesh. You MUST answer in Bangla, even if user asks in English. For context, user is currently in ${country}, and wants to go to ${country_choice} and work in ${job_choice}. If user asks currency related questions, give the answer in terms of taka/ BDT unless user asks for other currency.`,
         },
         ...enhancedMessages,
       ],
